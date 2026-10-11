@@ -1,0 +1,224 @@
+/* ===================================================================
+   CODE. CREATE. EXPERIENCE. — RESPONSIVE STYLES (CSS3)
+   Comprehensive layout adapters for Desktop, Laptop, Tablet, & Mobile
+   =================================================================== */
+
+@media (max-width: 1200px) {
+  :root {
+    --container-max: 1040px;
+  }
+
+  .tech-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .milestones-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --container-max: 920px;
+  }
+
+  .hero-section {
+    padding-top: 140px;
+  }
+
+  .process-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .process-card:last-child {
+    grid-column: span 2;
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-split-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .terminal-window {
+    height: 440px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --nav-height: 70px;
+  }
+
+  .site-navbar {
+    padding: 0 1.25rem;
+  }
+
+  .nav-links {
+    position: fixed;
+    top: var(--nav-height);
+    left: 0;
+    right: 0;
+    background: rgba(4, 7, 17, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    flex-direction: column;
+    padding: 30px 2rem;
+    gap: 1.5rem;
+    border-bottom: 1px solid var(--border-cyan);
+    transform: translateY(-150%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform var(--transition-normal), opacity var(--transition-normal);
+  }
+
+  .nav-links.mobile-open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .nav-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-nav-cta {
+    display: none;
+  }
+
+  .hero-section {
+    padding-top: 110px;
+    padding-bottom: 50px;
+  }
+
+  .hero-title {
+    font-size: 2.6rem;
+  }
+
+  .hero-description {
+    font-size: 1rem;
+    margin-bottom: 28px;
+  }
+
+  .hero-telemetry-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .milestones-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .process-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .process-card:last-child {
+    grid-column: span 1;
+  }
+
+  .tech-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .contact-form-card {
+    padding: 28px 20px;
+  }
+
+  /* Persistent HUD on Mobile */
+  .persistent-hud-wrapper {
+    bottom: 16px;
+    width: 95%;
+  }
+
+  .persistent-hud-card {
+    padding: 8px 14px;
+    gap: 10px;
+  }
+
+  .hud-phase-buttons {
+    display: none;
+  }
+
+  .hud-phase-chip {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+  }
+
+  .hud-left-stats {
+    font-size: 0.72rem;
+    gap: 8px;
+  }
+
+  .footer-top-row {
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .footer-links-group {
+    gap: 32px;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .footer-bottom-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 2.1rem;
+  }
+
+  .hero-cta-group {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-primary, .btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .section-wrapper {
+    padding: 80px 1.25rem;
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+  }
+
+  .tech-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .project-visual {
+    height: 180px;
+  }
+
+  .terminal-window {
+    height: 380px;
+  }
+
+  .terminal-screen {
+    font-size: 0.78rem;
+    padding: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

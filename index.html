@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CODE. CREATE. EXPERIENCE. — Full-Screen 3D Frame Scroll Experience</title>
+  <meta name="description" content="A full-screen cinematic 3D frame-by-frame scroll website showcasing the developer journey from writing code to launching a live digital reality. Powered by Three.js and GSAP ScrollTrigger.">
+  <meta name="theme-color" content="#040711">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="CODE. CREATE. EXPERIENCE. — Full-Screen Frame Scroll Experience">
+  <meta property="og:description" content="Cinematic full-screen 240-frame background animation synchronized with GSAP ScrollTrigger.">
+  <meta property="og:type" content="website">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;600;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Core Stylesheets -->
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <!-- Custom Cyber Cursor -->
+  <div class="custom-cursor-dot" aria-hidden="true"></div>
+  <div class="custom-cursor-ring" aria-hidden="true"></div>
+
+  <!-- ===================================================================
+       FULL-SCREEN ANIMATED BACKGROUND LAYER (FIXED BEHIND ALL CONTENT)
+       =================================================================== -->
+  <div id="canvas-bg-container" class="canvas-bg-container" aria-hidden="true">
+    <!-- 2D Canvas for 240-Frame Video Animation -->
+    <canvas id="animation-canvas"></canvas>
+
+    <!-- Three.js 3D Spatial Particles & Cyan/Blue Lighting -->
+    <canvas id="three-canvas"></canvas>
+
+    <!-- Dark Transparent Overlay for Text Legibility -->
+    <div class="bg-vignette-overlay"></div>
+    <div class="bg-scanline-overlay"></div>
+  </div>
+
+  <!-- ===================================================================
+       PRELOADER / TELEMETRY LOADING SCREEN
+       =================================================================== -->
+  <div id="preloader" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+    <div class="preloader-container">
+      <div class="preloader-hud-badge">SYSTEM // INITIALIZING TELEMETRY</div>
+
+      <div class="preloader-logo-wrap">
+        <div class="preloader-hex-outer"></div>
+        <div class="preloader-hex-inner">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+        </div>
+      </div>
+
+      <h2 class="preloader-title">CODE. <span>CREATE.</span> EXPERIENCE.</h2>
+      <div class="preloader-percent-display" id="preloader-percent">0%</div>
+
+      <div class="preloader-bar-wrap">
+        <div class="preloader-bar-fill" id="preloader-bar-fill"></div>
+      </div>
+
+      <div class="preloader-status" id="preloader-status">PRELOADING 240 FULL-SCREEN FRAMES...</div>
+      <button id="preloader-skip-btn" class="preloader-skip-btn" type="button">SKIP &amp; ENTER EXPERIENCE →</button>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       STICKY NAVIGATION BAR (ABOVE BACKGROUND)
+       =================================================================== -->
+  <header class="site-navbar">
+    <div class="nav-container">
+      <a href="#hero" class="nav-brand" aria-label="Code Nexus Home">
+        <div class="nav-brand-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+        </div>
+        <div class="nav-brand-text">
+          CODE<span class="highlight">.NEXUS</span>
+        </div>
+        <div class="nav-status-badge">
+          <span class="nav-status-dot"></span>
+          <span>LIVE // 240 FRAMES</span>
+        </div>
+      </a>
+
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#hero" class="active">Home</a></li>
+          <li><a href="#story">Story</a></li>
+          <li><a href="#process">Process</a></li>
+          <li><a href="#tech">Tech Stack</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <!-- Synthesized Audio Toggle -->
+        <button id="sound-toggle-btn" class="btn-sound-toggle" type="button" aria-label="Toggle Cyber Sound Effects" title="Sound FX: OFF">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+        </button>
+
+        <a href="#story" class="btn-nav-cta">
+          <span>Explore Story</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+
+        <!-- Mobile Hamburger Button -->
+        <button id="nav-toggle-btn" class="nav-toggle-btn" type="button" aria-label="Toggle Navigation Menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================================================================
+       MAIN FOREGROUND CONTENT (FLOATING OVER ANIMATED BACKGROUND)
+       =================================================================== -->
+  <main id="main-content">
+
+    <!-- Section 1: Hero -->
+    <section id="hero" class="hero-section">
+      <div class="hero-container">
+        <div class="hero-pill-badge">
+          <span class="pulse-beacon"></span>
+          <span>FULL-SCREEN 3D SCROLL JOURNEY</span>
+        </div>
+
+        <h1 class="hero-title">
+          CODE. <span class="text-gradient-cyan">CREATE.</span><br>
+          <span class="text-gradient-blue">EXPERIENCE.</span>
+        </h1>
+
+        <p class="hero-description">
+          Explore the journey from writing code to bringing a digital experience to life.
+          Scroll down to scrub smoothly through all 240 cinematic frames in real-time.
+        </p>
+
+        <div class="hero-cta-group">
+          <a href="#story" class="btn-primary" id="btn-explore-experience">
+            <span>Explore the Experience</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <polyline points="19 12 12 19 5 12"></polyline>
+            </svg>
+          </a>
+
+          <a href="#projects" class="btn-secondary">
+            <span>View Projects</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+          </a>
+        </div>
+
+        <div class="hero-telemetry-grid">
+          <div class="telemetry-item">
+            <div class="telemetry-value">240</div>
+            <div class="telemetry-label">Full-Screen Frames</div>
+          </div>
+          <div class="telemetry-item">
+            <div class="telemetry-value">100vw × 100vh</div>
+            <div class="telemetry-label">Cover Viewport</div>
+          </div>
+          <div class="telemetry-item">
+            <div class="telemetry-value">60 FPS</div>
+            <div class="telemetry-label">Hardware Blit</div>
+          </div>
+          <div class="telemetry-item">
+            <div class="telemetry-value">REVERSIBLE</div>
+            <div class="telemetry-label">Scroll Sync</div>
+          </div>
+        </div>
+
+        <a href="#story" class="hero-scroll-indicator" aria-label="Scroll down to begin animation">
+          <div class="mouse-icon">
+            <div class="mouse-wheel"></div>
+          </div>
+          <span>SCROLL DOWN TO PROGRESS FRAMES</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Section 2: Story Milestones (The 4 Acts) -->
+    <section id="story" class="section-wrapper">
+      <div class="section-header">
+        <div class="section-eyebrow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>CINEMATIC SEQUENCE // 4 ACTS</span>
+        </div>
+        <h2 class="section-title">The Developer Journey</h2>
+        <p class="section-subtitle">
+          Watch the background evolve as you scroll through each phase of creating software from first line to live deployment.
+        </p>
+      </div>
+
+      <div class="milestones-grid">
+        <!-- Milestone 1 -->
+        <div class="milestone-card active" data-phase="1">
+          <div class="milestone-card-header">
+            <span class="milestone-act-label">ACT I</span>
+            <span class="milestone-frame-badge">FRAMES 001–069</span>
+          </div>
+          <h3 class="milestone-card-title">Crafting the Code</h3>
+          <p class="milestone-card-desc">
+            Late-night flow state at the dual-monitor command center. Structuring clean architecture, defining modular components, and writing reactive logic.
+          </p>
+        </div>
+
+        <!-- Milestone 2 -->
+        <div class="milestone-card" data-phase="2">
+          <div class="milestone-card-header">
+            <span class="milestone-act-label">ACT II</span>
+            <span class="milestone-frame-badge">FRAMES 070–130</span>
+          </div>
+          <h3 class="milestone-card-title">Into the Editor</h3>
+          <p class="milestone-card-desc">
+            The camera moves in towards the monitor. Focusing deeply on syntax, refining algorithmic efficiency, and verifying state management.
+          </p>
+        </div>
+
+        <!-- Milestone 3 -->
+        <div class="milestone-card" data-phase="3">
+          <div class="milestone-card-header">
+            <span class="milestone-act-label">ACT III</span>
+            <span class="milestone-frame-badge">FRAMES 131–180</span>
+          </div>
+          <h3 class="milestone-card-title">Engaging the Compiler</h3>
+          <p class="milestone-card-desc">
+            Reaching for the mouse and clicking "Run". Build scripts invoke, bundle chunks compile, and hot-reload engines fire up in real-time.
+          </p>
+        </div>
+
+        <!-- Milestone 4 -->
+        <div class="milestone-card" data-phase="4">
+          <div class="milestone-card-header">
+            <span class="milestone-act-label">ACT IV</span>
+            <span class="milestone-frame-badge">FRAMES 181–240</span>
+          </div>
+          <h3 class="milestone-card-title">Live in Production</h3>
+          <p class="milestone-card-desc">
+            The browser window appears with a futuristic loader, then displays the live website. The boy smiles with satisfaction as the project runs flawlessly.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Development Process -->
+    <section id="process" class="section-wrapper">
+      <div class="section-header">
+        <div class="section-eyebrow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <span>WORKFLOW PIPELINE</span>
+        </div>
+        <h2 class="section-title">Development Process</h2>
+        <p class="section-subtitle">
+          Three principles powering high-performance, cinematic interactive engineering.
+        </p>
+      </div>
+
+      <div class="process-grid">
+        <div class="process-card">
+          <span class="process-step-num">01</span>
+          <div class="process-icon-wrap">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+          </div>
+          <h3 class="process-card-title">Write the Code</h3>
+          <p class="process-card-desc">
+            Architect modular, clean, and maintainable software systems. Strict type safety and decoupled state ensure effortless scalability and rock-solid stability.
+          </p>
+          <div class="process-card-metrics">
+            <span class="metric-pill">CLEAN SYNTAX</span>
+            <span class="metric-pill">ES6+ MODULES</span>
+            <span class="metric-pill">OPTIMIZED LOGIC</span>
+          </div>
+        </div>
+
+        <div class="process-card">
+          <span class="process-step-num">02</span>
+          <div class="process-icon-wrap">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+          </div>
+          <h3 class="process-card-title">Run the Project</h3>
+          <p class="process-card-desc">
+            Invoke high-throughput development servers. Lightning-fast compilation, zero-latency Hot Module Replacement (HMR), and automated GPU memory checks.
+          </p>
+          <div class="process-card-metrics">
+            <span class="metric-pill">INSTANT HMR</span>
+            <span class="metric-pill">ASSET CACHE</span>
+            <span class="metric-pill">GPU MEMORY OK</span>
+          </div>
+        </div>
+
+        <div class="process-card">
+          <span class="process-step-num">03</span>
+          <div class="process-icon-wrap">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+              <line x1="9" y1="9" x2="9.01" y2="9"></line>
+              <line x1="15" y1="9" x2="15.01" y2="9"></line>
+            </svg>
+          </div>
+          <h3 class="process-card-title">Experience the Result</h3>
+          <p class="process-card-desc">
+            Deliver fluid, responsive digital worlds. 60 FPS hardware-accelerated canvas animations, 3D spatial environments, and micro-interactions.
+          </p>
+          <div class="process-card-metrics">
+            <span class="metric-pill">60 FPS LOCKED</span>
+            <span class="metric-pill">100VW COVER</span>
+            <span class="metric-pill">CROSS-DEVICE</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Technology Stack -->
+    <section id="tech" class="section-wrapper">
+      <div class="section-header">
+        <div class="section-eyebrow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg>
+          <span>CORE ARCHITECTURE</span>
+        </div>
+        <h2 class="section-title">Technology Matrix</h2>
+        <p class="section-subtitle">
+          Curated technology stack powering full-screen 60 FPS animation, 3D depth, and fluid UI reactivity.
+        </p>
+      </div>
+
+      <div class="tech-grid">
+        <div class="tech-card">
+          <div class="tech-icon-row">
+            <div class="tech-badge-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 3h16l-1.5 15.5L12 22l-6.5-3.5L4 3z"/></svg>
+            </div>
+            <span class="tech-category-tag">MARKUP</span>
+          </div>
+          <div>
+            <h3 class="tech-name">HTML5</h3>
+            <p class="tech-role">Semantic structure, responsive viewport, accessible metadata, and clean hierarchy.</p>
+          </div>
+          <div class="tech-level-bar"><div class="tech-level-fill" style="width: 100%;"></div></div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-icon-row">
+            <div class="tech-badge-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg>
+            </div>
+            <span class="tech-category-tag">STYLING</span>
+          </div>
+          <div>
+            <h3 class="tech-name">CSS3 Vanilla</h3>
+            <p class="tech-role">Glassmorphism tokens, translucent overlays, glowing borders, and fluid typography.</p>
+          </div>
+          <div class="tech-level-bar"><div class="tech-level-fill" style="width: 95%;"></div></div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-icon-row">
+            <div class="tech-badge-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12h8"/></svg>
+            </div>
+            <span class="tech-category-tag">LOGIC</span>
+          </div>
+          <div>
+            <h3 class="tech-name">JavaScript ES6+</h3>
+            <p class="tech-role">Modular architecture, concurrent image preloading, and memory management.</p>
+          </div>
+          <div class="tech-level-bar"><div class="tech-level-fill" style="width: 98%;"></div></div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-icon-row">
+            <div class="tech-badge-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            </div>
+            <span class="tech-category-tag">3D WEBGL</span>
+          </div>
+          <div>
+            <h3 class="tech-name">Three.js</h3>
+            <p class="tech-role">Perspective camera, ambient cyan/blue lights, 3D particles, and parallax depth.</p>
+          </div>
+          <div class="tech-level-bar"><div class="tech-level-fill" style="width: 92%;"></div></div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-icon-row">
+            <div class="tech-badge-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <span class="tech-category-tag">TIMING</span>
+          </div>
+          <div>
+            <h3 class="tech-name">GSAP 3</h3>
+            <p class="tech-role">Animation engine powering smooth transitions, power3 easing, and UI micro-interactions.</p>
+          </div>
+          <div class="tech-level-bar"><div class="tech-level-fill" style="width: 96%;"></div></div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-icon-row">
+            <div class="tech-badge-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg>
+            </div>
+            <span class="tech-category-tag">SCROLL</span>
+          </div>
+          <div>
+            <h3 class="tech-name">ScrollTrigger</h3>
+            <p class="tech-role">Normalizes scroll progress 0 to 1, maps frames 001–240, and handles reverse scrubbing.</p>
+          </div>
+          <div class="tech-level-bar"><div class="tech-level-fill" style="width: 95%;"></div></div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-icon-row">
+            <div class="tech-badge-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/></svg>
+            </div>
+            <span class="tech-category-tag">GRAPHICS</span>
+          </div>
+          <div>
+            <h3 class="tech-name">Canvas 2D API</h3>
+            <p class="tech-role">DPR-clamped full-screen cover rendering, symmetric centering, and zero-distortion blit.</p>
+          </div>
+          <div class="tech-level-bar"><div class="tech-level-fill" style="width: 94%;"></div></div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-icon-row">
+            <div class="tech-badge-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            </div>
+            <span class="tech-category-tag">AUDIO</span>
+          </div>
+          <div>
+            <h3 class="tech-name">Web Audio API</h3>
+            <p class="tech-role">Synthesized cyber sound effects and harmonic frequency generators without external assets.</p>
+          </div>
+          <div class="tech-level-bar"><div class="tech-level-fill" style="width: 88%;"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Featured Projects -->
+    <section id="projects" class="section-wrapper">
+      <div class="section-header">
+        <div class="section-eyebrow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <span>PORTFOLIO SELECTION</span>
+        </div>
+        <h2 class="section-title">Featured Projects</h2>
+        <p class="section-subtitle">
+          Interactive digital experiences, creative technology platforms, and web engineering artifacts.
+        </p>
+      </div>
+
+      <div class="projects-grid">
+        <div class="project-card">
+          <div class="project-visual">
+            <div class="project-visual-grid"></div>
+            <div class="project-glow-orb"></div>
+            <div class="project-code-art">
+              <span style="color:#00f2fe;">const aether = new SpatialOS({</span>
+              <span style="color:#94a3b8; padding-left:14px;">renderMode: 'webgl2',</span>
+              <span style="color:#94a3b8; padding-left:14px;">frameRate: 60,</span>
+              <span style="color:#00f2fe;">});</span>
+            </div>
+          </div>
+          <div class="project-info">
+            <div class="project-header-row">
+              <span class="project-badge">SPATIAL WEB</span>
+              <span class="project-status">PRODUCTION READY</span>
+            </div>
+            <h3 class="project-title">Aether OS — Spatial Web Environment</h3>
+            <p class="project-description">
+              A futuristic 3D WebGL desktop simulator operating entirely in the browser. Features virtual window managers, spatial sound nodes, and real-time shader visualizers.
+            </p>
+            <div class="project-tech-tags">
+              <span class="project-tag">Three.js</span>
+              <span class="project-tag">GLSL Shaders</span>
+              <span class="project-tag">Web Audio</span>
+              <span class="project-tag">Vite</span>
+            </div>
+            <div class="project-actions">
+              <a href="#hero" class="btn-project-demo">
+                <span>Inspect Concept</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-visual">
+            <div class="project-visual-grid"></div>
+            <div class="project-glow-orb"></div>
+            <div class="project-code-art">
+              <span style="color:#60a5fa;">class SynapseVisualizer {</span>
+              <span style="color:#94a3b8; padding-left:14px;">connect(layerA, layerB);</span>
+              <span style="color:#94a3b8; padding-left:14px;">backpropagate();</span>
+              <span style="color:#60a5fa;">}</span>
+            </div>
+          </div>
+          <div class="project-info">
+            <div class="project-header-row">
+              <span class="project-badge">AI VISUALIZATION</span>
+              <span class="project-status">LIVE EXPERIMENT</span>
+            </div>
+            <h3 class="project-title">Synapse AI — Neural Network Visualizer</h3>
+            <p class="project-description">
+              Real-time interactive 3D particle graph illustrating deep learning weight activations and gradient descents through reactive neon nodes and floating data filaments.
+            </p>
+            <div class="project-tech-tags">
+              <span class="project-tag">Canvas 2D</span>
+              <span class="project-tag">WebGL</span>
+              <span class="project-tag">GSAP</span>
+              <span class="project-tag">TypeScript</span>
+            </div>
+            <div class="project-actions">
+              <a href="#hero" class="btn-project-demo">
+                <span>Inspect Concept</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-visual">
+            <div class="project-visual-grid"></div>
+            <div class="project-glow-orb"></div>
+            <div class="project-code-art">
+              <span style="color:#c084fc;">&lt;HyperionViewport&gt;</span>
+              <span style="color:#94a3b8; padding-left:14px;">&lt;Product3D model="quantum_pc" /&gt;</span>
+              <span style="color:#c084fc;">&lt;/HyperionViewport&gt;</span>
+            </div>
+          </div>
+          <div class="project-info">
+            <div class="project-header-row">
+              <span class="project-badge">COMMERCE 3D</span>
+              <span class="project-status">CASE STUDY</span>
+            </div>
+            <h3 class="project-title">Hyperion 3D — Next-Gen Showcase</h3>
+            <p class="project-description">
+              An e-commerce flagship experience providing 360-degree interactive product inspection, dynamic metallic material reflections, and seamless checkout pipelines.
+            </p>
+            <div class="project-tech-tags">
+              <span class="project-tag">Three.js</span>
+              <span class="project-tag">ScrollTrigger</span>
+              <span class="project-tag">PBR Shaders</span>
+              <span class="project-tag">CSS3</span>
+            </div>
+            <div class="project-actions">
+              <a href="#hero" class="btn-project-demo">
+                <span>Inspect Concept</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-visual">
+            <div class="project-visual-grid"></div>
+            <div class="project-glow-orb"></div>
+            <div class="project-code-art">
+              <span style="color:#4ade80;">:root {</span>
+              <span style="color:#94a3b8; padding-left:14px;">--glass-blur: 24px;</span>
+              <span style="color:#94a3b8; padding-left:14px;">--neon-cyan: #00f2fe;</span>
+              <span style="color:#4ade80;">}</span>
+            </div>
+          </div>
+          <div class="project-info">
+            <div class="project-header-row">
+              <span class="project-badge">DESIGN SYSTEM</span>
+              <span class="project-status">OPEN ARTIFACT</span>
+            </div>
+            <h3 class="project-title">Quantum UI — Futuristic Design Tokens</h3>
+            <p class="project-description">
+              A comprehensive component library crafted for dark-mode science-fiction interfaces, translucent glass HUDs, accessible keyboard focus rings, and reactive telemetry gauges.
+            </p>
+            <div class="project-tech-tags">
+              <span class="project-tag">CSS Architecture</span>
+              <span class="project-tag">Design Tokens</span>
+              <span class="project-tag">Micro-Animations</span>
+            </div>
+            <div class="project-actions">
+              <a href="#hero" class="btn-project-demo">
+                <span>Inspect Concept</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: Contact & Interactive CLI Terminal -->
+    <section id="contact" class="section-wrapper">
+      <div class="section-header">
+        <div class="section-eyebrow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <span>TRANSMISSION DISPATCH</span>
+        </div>
+        <h2 class="section-title">Initialize Connection</h2>
+        <p class="section-subtitle">
+          Interact with the developer command terminal or dispatch a secure message directly.
+        </p>
+      </div>
+
+      <div class="contact-split-grid">
+        <!-- Interactive CLI Terminal -->
+        <div class="terminal-window">
+          <div class="terminal-titlebar">
+            <div class="terminal-window-dots">
+              <span class="window-dot dot-red"></span>
+              <span class="window-dot dot-yellow"></span>
+              <span class="window-dot dot-green"></span>
+            </div>
+            <span class="terminal-title-text">bash — 80x24</span>
+            <span style="font-family:var(--font-mono); font-size:0.7rem; color:var(--text-muted);">UTF-8</span>
+          </div>
+
+          <div class="terminal-screen" id="terminal-screen">
+            <p><span class="prompt-cyan">NEXUS SYSTEM v2.40.0</span> [Full-Screen Canvas Background: Active]</p>
+            <p><span class="prompt-muted">Type 'help' to inspect available system routines.</span></p>
+            <div class="terminal-input-row">
+              <span class="terminal-prompt-sym">guest@code-nexus:~$</span>
+              <input type="text" id="terminal-cli-input" placeholder="type command (e.g. 'help', 'about', 'frames')..." autocomplete="off" spellcheck="false">
+            </div>
+          </div>
+
+          <div class="terminal-quick-actions">
+            <span style="font-family:var(--font-mono); font-size:0.72rem; color:var(--text-muted); align-self:center;">QUICK:</span>
+            <button class="btn-terminal-cmd" data-cmd="help" type="button">help</button>
+            <button class="btn-terminal-cmd" data-cmd="about" type="button">about</button>
+            <button class="btn-terminal-cmd" data-cmd="stack" type="button">stack</button>
+            <button class="btn-terminal-cmd" data-cmd="frames" type="button">frames</button>
+            <button class="btn-terminal-cmd" data-cmd="time" type="button">time</button>
+            <button class="btn-terminal-cmd" data-cmd="clear" type="button">clear</button>
+          </div>
+        </div>
+
+        <!-- Glassmorphism Contact Form -->
+        <div class="contact-form-card">
+          <div class="contact-card-header">
+            <h3 class="contact-card-title">Send a Transmission</h3>
+            <p class="contact-card-desc">Direct line for inquiries, engineering collaborations, or creative partnerships.</p>
+          </div>
+
+          <form id="contact-form" class="contact-form" novalidate>
+            <div class="form-group">
+              <label for="name-input" class="form-label">Identifier / Name</label>
+              <input type="text" id="name-input" class="form-input" placeholder="e.g. Alex Mercer" required>
+            </div>
+
+            <div class="form-group">
+              <label for="email-input" class="form-label">Signal Frequency / Email</label>
+              <input type="email" id="email-input" class="form-input" placeholder="e.g. alex@nexus.dev" required>
+            </div>
+
+            <div class="form-group">
+              <label for="message-input" class="form-label">Transmission Payload / Message</label>
+              <textarea id="message-input" class="form-textarea" placeholder="Describe project requirements or message..." required></textarea>
+            </div>
+
+            <div id="form-status-msg" class="form-status-msg"></div>
+
+            <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">
+              <span>Transmit Message</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 7: Footer -->
+    <footer class="site-footer">
+      <div class="footer-container">
+        <div class="footer-top-row">
+          <div class="footer-brand-col">
+            <div class="nav-brand">
+              <div class="nav-brand-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+              </div>
+              <div class="nav-brand-text">
+                CODE<span class="highlight">.NEXUS</span>
+              </div>
+            </div>
+            <p class="footer-desc">
+              A cinematic full-screen developer experience driven by 240 sequential frames, Canvas 2D blitting, Three.js 3D depth, and GSAP ScrollTrigger.
+            </p>
+          </div>
+
+          <div class="footer-links-group">
+            <div class="footer-links-col">
+              <span class="footer-links-heading">Navigation</span>
+              <a href="#hero">Home</a>
+              <a href="#story">Story Milestones</a>
+              <a href="#process">Development Process</a>
+              <a href="#tech">Technology Matrix</a>
+            </div>
+
+            <div class="footer-links-col">
+              <span class="footer-links-heading">Portfolio</span>
+              <a href="#projects">Aether OS</a>
+              <a href="#projects">Synapse AI</a>
+              <a href="#projects">Hyperion 3D</a>
+              <a href="#projects">Quantum UI</a>
+            </div>
+
+            <div class="footer-links-col">
+              <span class="footer-links-heading">Connect</span>
+              <a href="#contact">Terminal Dispatch</a>
+              <a href="mailto:developer@nexus.dev">Direct Email</a>
+              <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+              <a href="https://linkedin.com" target="_blank" rel="noopener">LinkedIn</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-bottom-row">
+          <div class="footer-copyright">
+            &copy; 2026 CODE.NEXUS. All rights reserved. Full-screen 240-frame background scroll engine.
+          </div>
+
+          <div class="footer-telemetry">
+            <span>FRAMES: 240</span>
+            <span>GPU: 60 FPS</span>
+            <button id="btn-back-to-top" class="btn-back-to-top" type="button" aria-label="Back to Top" title="Back to Top">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- ===================================================================
+       PERSISTENT FLOATING TELEMETRY HUD (OVER FULL-SCREEN BACKGROUND)
+       =================================================================== -->
+  <aside id="persistent-hud" class="persistent-hud-wrapper" aria-label="Animation Controls and Telemetry">
+    <div class="persistent-hud-card">
+      <div class="hud-left-stats">
+        <span class="live-dot"></span>
+        <span>FRAME: <strong id="current-frame-hud" style="color:var(--cyan-primary);">001</strong> / 240</span>
+        <span class="hud-phase-chip" id="current-phase-hud">ACT I // ARCHITECTING</span>
+        <span style="color:var(--text-muted);"><strong id="progress-hud" style="color:var(--cyan-primary);">0%</strong></span>
+      </div>
+
+      <div class="hud-center-timeline" id="timeline-track" title="Click anywhere along timeline to scrub frames">
+        <div class="timeline-progress-fill" id="timeline-fill"></div>
+      </div>
+
+      <div class="hud-right-controls">
+        <div class="hud-phase-buttons">
+          <button class="btn-phase-step active" data-phase="1" type="button">01 // CODE</button>
+          <button class="btn-phase-step" data-phase="2" type="button">02 // FOCUS</button>
+          <button class="btn-phase-step" data-phase="3" type="button">03 // EXECUTE</button>
+          <button class="btn-phase-step" data-phase="4" type="button">04 // LAUNCH</button>
+        </div>
+
+        <button id="btn-auto-scrub" class="btn-hud-tool" type="button" title="Toggle Auto-Scrub Demo">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          <span>AUTO SCRUB</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===================================================================
+       SCRIPTS (CDNs & MODULAR JS ARCHITECTURE)
+       =================================================================== -->
+  <!-- 1. Three.js for 3D Spatial Particles & Lighting -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- 2. GSAP & ScrollTrigger for Scroll Synchronization -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- 3. Modular Application Architecture -->
+  <script src="js/preload.js"></script>
+  <script src="js/animation.js"></script>
+  <script src="js/three-scene.js"></script>
+  <script src="js/scroll.js"></script>
+  <script src="js/effects.js"></script>
+  <script src="js/main.js"></script>
+
+</body>
+</html>
